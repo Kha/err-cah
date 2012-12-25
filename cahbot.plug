@@ -1,0 +1,6 @@
+[Core]
+Name = CAHBot
+Module = cahbot
+
+[Documentation]
+Description = Play a Good Game of Cards (TM).
