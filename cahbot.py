@@ -69,6 +69,7 @@ class CAHBot(BotPlugin):
 	""" Play a Good Game of Cards (TM) """
 
 	def __init__(self):
+		super(CAHBot, self).__init__()
 		self.game = None
 
 	@botcmd
