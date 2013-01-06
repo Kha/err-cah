@@ -10,8 +10,8 @@ from errbot.botplugin import BotPlugin
 from errbot.utils import get_sender_username, get_jid_from_message
 from errbot import botcmd
 
-def good_cards(idxs, num, high):
-	return (len(set(idxs)) == len(idxs) == num) and all([0 <= i < high for i in idxs])
+def good_cards(idxs, high):
+	return (len(set(idxs)) == len(idxs)) and all([0 <= i < high for i in idxs])
 
 class Player(object):
 	def __init__(self, name, game):
@@ -24,7 +24,7 @@ class Player(object):
 	def play(self, idxs):
 		if self.idxs is not None:
 			raise ValueError("You've already played your cards.")
-		if not good_cards(idxs, self.game.num_gaps, len(self.hand)):
+		if not good_cards(idxs, len(self.hand)) or len(idxs) != self.game.num_gaps:
 			raise ValueError("All you had to do was choose {0} damn cards, CJ.".format(self.game.num_gaps))
 
 		self.idxs = idxs
@@ -78,7 +78,7 @@ class CAHBot(BotPlugin):
 	def cah_start(self, mess, args):
 		""" Start a new round """
 		self.game = Game(gm = mess.getFrom())
-		self.send(str(self.game.gm), "Use '!cah vote 1st 2nd 3rd' when your patience is gone.")
+		self.send(str(self.game.gm), "Use '!cah vote <submission indices in ascending order of funniness>' when your patience is gone.")
 		return """{0} draws a black card...
 
 {1}
@@ -123,15 +123,15 @@ Use '!cah join' to join in!""".format(self.game.gm.getResource(), self.game.bcar
 			self.send(CHATROOM_PRESENCE[0], s, message_type='groupchat')
 
 		args = map(int, args)
-		if not good_cards(args, 3, len(self.game.played_hands)):
-			return "Three shall be the number thou shalt count, and the number of the counting shall be three. Four shalt thou not count, neither count thou two, excepting that thou then proceed to three."
+		if not good_cards(args, len(self.game.played_hands)) or len(args) < 1:
+			return "Try again."
 
-		announce("3rd place goes to...\n{0}: {1}".format(self.game.played_hands[args[2]].name.getResource(), self.game.played_hands[args[2]].answer()))
-		sleep(1000)
-		announce("2nd place goes to...\n{0}: {1}".format(self.game.played_hands[args[1]].name.getResource(), self.game.played_hands[args[1]].answer()))
-		sleep(1000)
+		for i in args[:-1]:
+			announce("{0}. place goes to...\n{1}: {2}".format(len(args) - i, self.game.played_hands[args[i]].name.getResource(), self.game.played_hands[args[i]].answer()))
+			sleep(2)
+
 		announce("And the winner is...")
-		sleep(2000)
-		announce("{0}: {1}".format(self.game.played_hands[args[1]].name.getResource(), self.game.played_hands[args[1]].answer()))
+		sleep(4)
+		announce("{0}: {1}".format(self.game.played_hands[args[-1]].name.getResource(), self.game.played_hands[args[-1]].answer()))
 
 		self.game = None
