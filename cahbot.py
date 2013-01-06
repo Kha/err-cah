@@ -3,7 +3,9 @@ __author__ = 'Sebastian Ullrich'
 import random
 import os
 from itertools import chain
+from time import sleep
 
+from config import CHATROOM_PRESENCE
 from errbot.botplugin import BotPlugin
 from errbot.utils import get_sender_username, get_jid_from_message
 from errbot import botcmd
