@@ -99,9 +99,9 @@ Use '!cah join' to join in!""".format(self.game.gm.getResource(), self.game.bcar
 		except ValueError as e:
 			return send(e.message)
 
-		send("Here you go:\n" +\
+		send(self.game.bcard + "\n" +\
 				"\n".join(["{0} {1}".format(i, card) for i, card in enumerate(self.game.players[mess.getFrom()].hand)]) + "\n" +\
-				"Use '!cah play <indices>' to play your card(s)")
+				"Use '!cah play <indices>' to play your {0} card(s)".format(self.game.num_gaps))
 
 	@botcmd(split_args_with=' ')
 	def cah_play(self, mess, args):
@@ -115,7 +115,7 @@ Use '!cah join' to join in!""".format(self.game.gm.getResource(), self.game.bcar
 			return e.message
 
 		nth = len(self.game.played_hands) - 1
-		self.send(str(self.game.gm), "Submission {0} of {1}:\n{2}".format(nth, len(self.game.players), self.game.played_hands[nth].answer()))
+		self.send(str(self.game.gm), "Submission {0} of {1}:\n{0} {2}".format(nth, len(self.game.players), self.game.played_hands[nth].answer()))
 
 	@botcmd(split_args_with=' ')
 	def cah_vote(self, mess, args):
